@@ -1,10 +1,8 @@
-from backend.service.rag.ingestion.pdf_extractor import extract_korean_english_text
-from backend.service.rag.components.embedding.sentence_transformer_embedder import (
+from rag.components.embedding.sentence_transformer_embedder import (
     SentenceTransformerEmbedder,
 )
-from backend.service.rag.components.vectorstore.chroma.chroma_store import (
-    ChromaVectorStore,
-)
+from rag.components.vectorstore.chroma.chroma_store import ChromaVectorStore
+from rag.ingestion.pdf_extractor import extract_korean_english_text
 
 
 class RAGQueryService:
@@ -27,7 +25,7 @@ class RAGQueryService:
             )
             print(f"총 {self.vectorstore.count()}개의 데이터가 벡터 DB에 성공적으로 저장되었습니다!")
         else:
-            print(f"이미 {self.vectorstore.count()}개의 데이터가 벡터 DB에 성공적으로 저장되어 있습니다!")
+            print(f"이미 {self.vectorstore.count()}개의 데이터가 벡터 DB에 저장되어 있습니다!")
 
     def search(self, query: str, n_results: int = 3):
         query_embedding = self.embedder.embed_query(query)

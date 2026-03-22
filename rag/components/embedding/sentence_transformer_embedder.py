@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 
-from backend.core.config import EMBEDDING_MODEL_NAME
+from core.config import EMBEDDING_MODEL_NAME
 
 
 class SentenceTransformerEmbedder:

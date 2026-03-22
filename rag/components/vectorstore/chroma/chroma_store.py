@@ -1,6 +1,6 @@
 import chromadb
 
-from backend.core.config import VECTOR_DB_PATH, COLLECTION_NAME
+from core.config import COLLECTION_NAME, VECTOR_DB_PATH
 
 
 class ChromaVectorStore:
