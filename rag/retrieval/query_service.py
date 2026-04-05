@@ -2,34 +2,34 @@ from rag.components.embedding.sentence_transformer_embedder import (
     SentenceTransformerEmbedder,
 )
 from rag.components.vectorstore.chroma.chroma_store import ChromaVectorStore
-from rag.ingestion.pdf_extractor import extract_korean_english_text
+from rag.ingestion.document_processor import DocumentProcessor
 
 
 class RAGQueryService:
     def __init__(self):
+        self.processor = DocumentProcessor()
         self.embedder = SentenceTransformerEmbedder()
         self.vectorstore = ChromaVectorStore()
 
-    def extract_documents(self, file_path: str):
-        pdf_text = extract_korean_english_text(file_path)
-        documents = [doc.strip() for doc in pdf_text.split("\n") if doc.strip()]
-        return pdf_text, documents
-
-    def preview_ingest(self, file_path: str):
-        pdf_text, documents = self.extract_documents(file_path)
-        embeddings = self.embedder.embed_documents(documents) if documents else []
+    def build_ingest_preview(self, file_path: str):
+        raw_text = self.processor.extract_text(file_path)
+        documents = self.processor.split_documents(raw_text)
+        chunks = self.processor.chunk_documents(documents)
+        embeddings = self.embedder.embed_documents(chunks) if chunks else []
 
         embedding_dimension = 0
         sample_embedding = []
-        if len(documents) > 0:
+        if chunks:
             embedding_dimension = int(len(embeddings[0]))
             sample_embedding = embeddings[0][:8].tolist()
 
         return {
             "file_path": file_path,
-            "raw_text": pdf_text,
+            "raw_text": raw_text,
             "documents": documents,
+            "chunks": chunks,
             "document_count": len(documents),
+            "chunk_count": len(chunks),
             "embedding_dimension": embedding_dimension,
             "sample_embedding": sample_embedding,
             "vector_store_count": self.vectorstore.count(),
@@ -42,25 +42,29 @@ class RAGQueryService:
         if self.vectorstore.count() > 0:
             return {
                 "status": "skipped",
-                "message": "Vector store already contains indexed documents.",
-                "document_count": self.vectorstore.count(),
+                "message": "Vector store already contains indexed chunks.",
+                "item_count": self.vectorstore.count(),
                 "file_path": file_path,
             }
 
-        _, documents = self.extract_documents(file_path)
-        embeddings = self.embedder.embed_documents(documents)
-        ids = [f"doc_{i}" for i in range(len(documents))]
+        preview = self.build_ingest_preview(file_path)
+        chunks = preview["chunks"]
+        embeddings = self.embedder.embed_documents(chunks) if chunks else []
+        ids = [f"chunk_{i}" for i in range(len(chunks))]
 
-        self.vectorstore.add_documents(
-            documents=documents,
-            embeddings=embeddings,
-            ids=ids,
-        )
+        if chunks:
+            self.vectorstore.add_documents(
+                documents=chunks,
+                embeddings=embeddings,
+                ids=ids,
+            )
 
         return {
             "status": "ingested",
             "message": "PDF content was indexed successfully.",
-            "document_count": self.vectorstore.count(),
+            "item_count": self.vectorstore.count(),
+            "document_count": preview["document_count"],
+            "chunk_count": preview["chunk_count"],
             "file_path": file_path,
         }
 
@@ -93,7 +97,6 @@ class RAGQueryService:
             "query": query,
             "query_embedding_dimension": int(len(query_embedding)),
             "query_embedding_preview": query_embedding[:8].tolist(),
-            "documents": document_list,
             "items": items,
             "raw": raw_result,
         }

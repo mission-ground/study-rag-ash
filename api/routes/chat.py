@@ -1,12 +1,14 @@
-from functools import lru_cache
-
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from api.dependencies import get_rag_service
 from core.config import PDF_PATH
-from rag.retrieval.query_service import RAGQueryService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+
+
+class IngestPreviewRequest(BaseModel):
+    pdf_path: str = Field(default=PDF_PATH, description="PDF file path to inspect.")
 
 
 class IngestRequest(BaseModel):
@@ -22,14 +24,15 @@ class SearchRequest(BaseModel):
     n_results: int = Field(default=3, ge=1, le=20)
 
 
-@lru_cache
-def get_rag_service():
-    return RAGQueryService()
-
-
 @router.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@router.post("/preview")
+def preview_ingest(request: IngestPreviewRequest):
+    rag_service = get_rag_service()
+    return rag_service.build_ingest_preview(file_path=request.pdf_path)
 
 
 @router.post("/ingest")

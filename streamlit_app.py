@@ -2,61 +2,70 @@ from pathlib import Path
 
 import streamlit as st
 
+from api.dependencies import get_rag_service
 from core.config import PDF_PATH
-from rag.retrieval.query_service import RAGQueryService
 
 st.set_page_config(
     page_title="RAG Inspector",
-    page_icon="🔎",
+    page_icon="R",
     layout="wide",
 )
-
-
-@st.cache_resource
-def get_rag_service():
-    return RAGQueryService()
 
 
 def default_pdf_path():
     return str(Path(PDF_PATH))
 
 
-def render_ingest_tab(rag_service: RAGQueryService):
+def render_ingest_tab():
     st.subheader("Ingestion Inspector")
-    st.caption("PDF 추출, 문서 분리, 임베딩 생성, 벡터 DB 적재 상태를 단계별로 확인합니다.")
+    st.caption(
+        "Inspect each ingestion stage: PDF extraction, document splitting, chunking, embeddings, and vector store updates."
+    )
 
-    pdf_path = st.text_input("PDF 경로", value=default_pdf_path())
-    preview_clicked = st.button("추출/임베딩 미리보기", use_container_width=True)
+    rag_service = get_rag_service()
+    pdf_path = st.text_input("PDF path", value=default_pdf_path())
+    preview_clicked = st.button("Generate preview", use_container_width=True)
 
     if preview_clicked:
-        with st.spinner("PDF를 분석하고 있습니다..."):
-            preview = rag_service.preview_ingest(pdf_path)
+        with st.spinner("Analyzing PDF..."):
+            preview = rag_service.build_ingest_preview(pdf_path)
 
-        st.success("미리보기를 생성했습니다.")
+        st.success("Preview generated.")
 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("추출 문서 수", preview["document_count"])
-        col2.metric("임베딩 차원", preview["embedding_dimension"])
-        col3.metric("현재 벡터 DB 수", preview["vector_store_count"])
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Documents", preview["document_count"])
+        col2.metric("Chunks", preview["chunk_count"])
+        col3.metric("Embedding dim", preview["embedding_dimension"])
+        col4.metric("Vector store items", preview["vector_store_count"])
 
-        with st.expander("1. Raw Text Preview", expanded=True):
+        with st.expander("1. Raw text preview", expanded=True):
             st.text_area(
-                "PDF에서 추출한 원문",
+                "Extracted text",
                 value=preview["raw_text"][:5000],
-                height=240,
+                height=220,
             )
 
-        with st.expander("2. Split Documents Preview", expanded=True):
-            if preview["documents"]:
-                rows = [
-                    {"index": idx + 1, "text": doc}
-                    for idx, doc in enumerate(preview["documents"][:30])
-                ]
+        with st.expander("2. Document split preview", expanded=True):
+            rows = [
+                {"index": idx + 1, "text": doc}
+                for idx, doc in enumerate(preview["documents"][:30])
+            ]
+            if rows:
                 st.dataframe(rows, use_container_width=True)
             else:
-                st.info("추출된 문서가 없습니다.")
+                st.info("No documents were extracted.")
 
-        with st.expander("3. Embedding Preview", expanded=True):
+        with st.expander("3. Chunk preview", expanded=True):
+            rows = [
+                {"index": idx + 1, "chunk": chunk}
+                for idx, chunk in enumerate(preview["chunks"][:30])
+            ]
+            if rows:
+                st.dataframe(rows, use_container_width=True)
+            else:
+                st.info("No chunks were produced.")
+
+        with st.expander("4. Embedding preview", expanded=True):
             st.write(
                 {
                     "embedding_dimension": preview["embedding_dimension"],
@@ -66,58 +75,62 @@ def render_ingest_tab(rag_service: RAGQueryService):
 
     st.divider()
     st.subheader("Index Control")
-    reset_before_ingest = st.checkbox("기존 컬렉션을 초기화하고 다시 적재", value=False)
+    reset_before_ingest = st.checkbox("Reset collection before ingest", value=False)
 
-    if st.button("벡터 DB에 적재", type="primary", use_container_width=True):
-        with st.spinner("벡터 DB에 적재하고 있습니다..."):
+    if st.button("Ingest into vector store", type="primary", use_container_width=True):
+        with st.spinner("Writing chunks into the vector store..."):
             result = rag_service.ingest_pdf(pdf_path, reset=reset_before_ingest)
         st.write(result)
 
 
-def render_search_tab(rag_service: RAGQueryService):
+def render_search_tab():
     st.subheader("Retrieval Inspector")
-    st.caption("질문 임베딩, 검색 결과, 거리값, raw 응답을 단계별로 확인합니다.")
+    st.caption(
+        "Inspect query embeddings, ranked retrieval results, and raw vector store responses."
+    )
 
+    rag_service = get_rag_service()
     query = st.text_area(
-        "질문",
-        value="이 책에서 말하는 돈 관리의 핵심은 무엇인가요?",
+        "Query",
+        value="What is the core money management lesson in this book?",
         height=100,
     )
-    n_results = st.slider("검색 개수", min_value=1, max_value=10, value=3)
+    n_results = st.slider("Number of results", min_value=1, max_value=10, value=3)
 
-    if st.button("검색 실행", type="primary", use_container_width=True):
-        with st.spinner("질문을 검색하고 있습니다..."):
+    if st.button("Run search", type="primary", use_container_width=True):
+        with st.spinner("Searching the vector store..."):
             result = rag_service.search(query=query, n_results=n_results)
 
         col1, col2 = st.columns(2)
-        col1.metric("질문 임베딩 차원", result["query_embedding_dimension"])
-        col2.metric("반환 문서 수", len(result["items"]))
+        col1.metric("Query embedding dim", result["query_embedding_dimension"])
+        col2.metric("Returned items", len(result["items"]))
 
-        with st.expander("1. Query Embedding Preview", expanded=True):
+        with st.expander("1. Query embedding preview", expanded=True):
             st.write({"query_embedding_first_8": result["query_embedding_preview"]})
 
-        with st.expander("2. Retrieval Results", expanded=True):
+        with st.expander("2. Retrieval results", expanded=True):
             if result["items"]:
                 st.dataframe(result["items"], use_container_width=True)
             else:
-                st.info("검색 결과가 없습니다. 먼저 ingest를 수행해 주세요.")
+                st.info("No results found. Run ingest first.")
 
-        with st.expander("3. Raw Vector Store Response", expanded=False):
+        with st.expander("3. Raw vector store response", expanded=False):
             st.json(result["raw"])
 
 
 def main():
     st.title("RAG Step Inspector")
-    st.caption("RAG 파이프라인의 각 단계를 직접 확인하면서 문제 지점을 찾기 위한 Streamlit UI")
+    st.caption(
+        "Use this UI to validate each RAG stage and quickly find where the pipeline starts to drift."
+    )
 
-    rag_service = get_rag_service()
     ingest_tab, search_tab = st.tabs(["Ingestion", "Retrieval"])
 
     with ingest_tab:
-        render_ingest_tab(rag_service)
+        render_ingest_tab()
 
     with search_tab:
-        render_search_tab(rag_service)
+        render_search_tab()
 
 
 if __name__ == "__main__":
