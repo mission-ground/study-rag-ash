@@ -1,2 +1,4 @@
 packaging @ file:///C:/miniconda3/conda-bld/packaging_1761049101700/work
+fastapi>=0.115,<1.0
 PyMuPDF==1.27.1
+uvicorn>=0.30,<1.0

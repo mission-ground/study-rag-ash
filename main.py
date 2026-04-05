@@ -1,48 +1,16 @@
-import argparse
+import uvicorn
+from fastapi import FastAPI
 
-from core.config import PDF_PATH
-from rag.retrieval.query_service import RAGQueryService
+from api.routes.chat import router as chat_router
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="RAG PDF search runner")
-    parser.add_argument(
-        "--ingest",
-        action="store_true",
-        help="Rebuild or initialize the vector store from the source PDF before searching.",
-    )
-    parser.add_argument(
-        "--pdf-path",
-        default=PDF_PATH,
-        help="PDF file path to ingest when --ingest is used.",
-    )
-    parser.add_argument(
-        "--query",
-        default="이 책에서 말하는 돈 관리의 핵심은 무엇인가요?",
-        help="Question to search against the vector store.",
-    )
-    parser.add_argument(
-        "--n-results",
-        type=int,
-        default=3,
-        help="Number of search results to return.",
-    )
-    return parser.parse_args()
+app = FastAPI(title="study-rag-ash", version="0.1.0")
+app.include_router(chat_router, prefix="/api")
 
 
-def main():
-    args = parse_args()
-    rag_service = RAGQueryService()
-
-    if args.ingest:
-        rag_service.ingest_pdf(file_path=args.pdf_path)
-
-    results = rag_service.search(query=args.query, n_results=args.n_results)
-
-    print("\n--- [검색 결과] ---")
-    for i, doc in enumerate(results["documents"][0]):
-        print(f"{i + 1}번째 관련 문장: {doc}")
+@app.get("/")
+def read_root():
+    return {"message": "RAG API is running."}
 
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)
