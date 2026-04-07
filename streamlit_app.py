@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 
 import streamlit as st
 
@@ -27,6 +27,7 @@ def render_ingest_tab():
     preview_clicked = st.button("Generate preview", use_container_width=True)
 
     if preview_clicked:
+        # 중간 산출물을 먼저 보여 줘서 추출이나 청킹 문제를 빨리 찾을 수 있게 합니다.
         with st.spinner("Analyzing PDF..."):
             preview = rag_service.build_ingest_preview(pdf_path)
 
@@ -98,6 +99,7 @@ def render_search_tab():
     n_results = st.slider("Number of results", min_value=1, max_value=10, value=3)
 
     if st.button("Run search", type="primary", use_container_width=True):
+        # 임베딩 크기, 순위, raw 응답을 함께 보여 줘서 검색 문제를 추적합니다.
         with st.spinner("Searching the vector store..."):
             result = rag_service.search(query=query, n_results=n_results)
 

@@ -1,4 +1,4 @@
-from rag.generation.generator import Generator
+﻿from rag.generation.generator import Generator
 from rag.retrieval.retriever import Retriever
 
 
@@ -7,8 +7,9 @@ class RAGPipeline:
         self.retriever = Retriever(embedder, vector_store)
         self.generator = Generator()
 
-    def ask(self, query):
-        documents = self.retriever.retrieve(query)
+    def ask(self, query, k: int = 3):
+        # 검색으로 컨텍스트를 만든 뒤 생성 단계에 전달하는 가장 단순한 파이프라인입니다.
+        documents = self.retriever.retrieve(query, k=k)
         context = "\n".join(documents)
         answer = self.generator.generate(query, context)
         return answer
