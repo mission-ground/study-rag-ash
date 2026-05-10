@@ -1,0 +1,103 @@
+{
+  "name": "money-psychology-sample",
+  "description": "MVP retrieval evaluation questions for 북브리프_돈의심리학.pdf.",
+  "questions": [
+    {
+      "question": "이 책은 사람들이 부자가 되지 못하는 이유를 어떤 관점에서 설명하나요?",
+      "expected_answer": "이 책은 사람들이 부자가 되지 못하는 이유를 심리라는 관점에서 설명합니다.",
+      "expected_evidence": [
+        "『돈의 심리학』은 대다수 사람들이 부자가 되지 못하는 이유를 ‘심리’라는 렌즈로 분석한 책이다.",
+        "돈은 규칙과 법칙이 있는 물리학이 아니다. 감정과 행동이 좌우하는 심리학이다."
+      ],
+      "source_document": "북브리프_돈의심리학.pdf",
+      "source_page": 1,
+      "source_section": "책 소개",
+      "difficulty": "easy",
+      "question_type": "factual",
+      "metadata": {
+        "topic": "book_summary"
+      }
+    },
+    {
+      "question": "워런 버핏의 성공에서 저자가 강조하는 진짜 비밀은 무엇인가요?",
+      "expected_answer": "저자는 워런 버핏의 성공 비밀을 투자 감각만이 아니라 오랫동안 투자한 시간과 복리의 힘으로 설명합니다.",
+      "expected_evidence": [
+        "성공의 진짜 열쇠는 그가 무려 75년 동안 경이로운 투자자였다는 점이다.",
+        "그의 재주는 투자였지만, 그의 비밀은 시간이었다. 이것이 바로 복리의 원리다."
+      ],
+      "source_document": "북브리프_돈의심리학.pdf",
+      "source_page": 1,
+      "source_section": "하나, 시간을 보는 눈을 넓혀라",
+      "difficulty": "medium",
+      "question_type": "reasoning",
+      "metadata": {
+        "topic": "compound_interest"
+      }
+    },
+    {
+      "question": "금융 의사결정에서 저자가 권하는 태도는 무엇인가요?",
+      "expected_answer": "저자는 지나치게 냉철한 이성만 추구하기보다 꽤 적당히 합리적이고 적당히 감정적인 태도를 권합니다.",
+      "expected_evidence": [
+        "금융에 관한 의사결정을 내릴 때는 냉철하게 이성적이 되려고 하지 마라.",
+        "그냥 ‘꽤 적당히 합리적이고 적당히 감정적인’ 것을 목표로 삼아라."
+      ],
+      "source_document": "북브리프_돈의심리학.pdf",
+      "source_page": 1,
+      "source_section": "둘, 적당히 감정적으로 투자하라",
+      "difficulty": "easy",
+      "question_type": "factual",
+      "metadata": {
+        "topic": "investment_behavior"
+      }
+    },
+    {
+      "question": "리스크에 대비하기 위해 전략 안에 무엇을 포함해야 하나요?",
+      "expected_answer": "리스크에 대비하려면 전략 안에 실수에 대비한 충분한 현금 대책을 포함해야 합니다.",
+      "expected_evidence": [
+        "자신의 전략 속에 실수에 대비한 대책(현금)을 충분히 포함시킨 사람은 다른 곳(주식)에서 어려움에 처하더라도",
+        "성공하려면 살아남아야 한다."
+      ],
+      "source_document": "북브리프_돈의심리학.pdf",
+      "source_page": 2,
+      "source_section": "셋, 리스크의 존재를 인정하고 대비하라",
+      "difficulty": "medium",
+      "question_type": "reasoning",
+      "metadata": {
+        "topic": "risk_management"
+      }
+    },
+    {
+      "question": "포트폴리오를 볼 때 일부보다 전체를 봐야 하는 이유는 무엇인가요?",
+      "expected_answer": "대부분의 선택이나 자산은 큰 가치가 없을 수 있지만, 일부 큰 성공이 전체 성과를 좌우할 수 있기 때문입니다.",
+      "expected_evidence": [
+        "평생 모은 작품의 99퍼센트는 거의 아무 가치 없는 것으로 판명 났을 것이다.",
+        "나머지 1퍼센트가 피카소 같은 이의 작품이라면 말이다."
+      ],
+      "source_document": "북브리프_돈의심리학.pdf",
+      "source_page": 2,
+      "source_section": "넷, 포트폴리오의 일부가 아닌 전체를 보라",
+      "difficulty": "medium",
+      "question_type": "reasoning",
+      "metadata": {
+        "topic": "portfolio"
+      }
+    },
+    {
+      "question": "돈이 주는 가장 큰 배당금은 무엇이라고 설명하나요?",
+      "expected_answer": "돈이 주는 가장 큰 배당금은 원하는 것을 원하는 때, 원하는 사람과 원하는 만큼 할 수 있는 삶의 통제력입니다.",
+      "expected_evidence": [
+        "사람들은 자신의 삶을 마음대로 하고 싶어 한다는 사실이다.",
+        "원하는 것을, 원할 때, 원하는 사람과, 원하는 만큼 오랫동안 할 수 있는 능력은 가치를 매길 수 없을 만큼 귀한 것이다.",
+        "이는 돈이 주는 가장 큰 배당금이다."
+      ],
+      "source_document": "북브리프_돈의심리학.pdf",
+      "source_page": 2,
+      "source_section": "다섯, 돈이 주는 배당금을 놓치지 마라",
+      "difficulty": "easy",
+      "question_type": "summary",
+      "metadata": {
+        "topic": "wealth_and_freedom"
+      }
+    }
+  ]
+}

@@ -184,3 +184,44 @@ docs/rag-plan-by-codex
 - 실제 샘플 평가 질문 JSON 파일은 TASK-003 범위이므로 생성하지 않았다.
 - 검색 metric, retrieval runner, UI 연동은 TASK-002 범위가 아니므로 구현하지 않았다.
 - JSON 로더는 최소 초안이며, 스키마 고도화나 엄격한 데이터 검증은 이후 작업에서 다룬다.
+
+## 2026-05-11 / TASK-003 결과 기록
+
+### 작업 브랜치
+
+docs/rag-plan-by-codex
+
+### 수행한 TASK
+
+- TASK-003: 샘플 평가 질문 JSON 추가
+
+### 수정한 파일
+
+- docs/evaluation_questions.json
+- docs/progress-log.md
+
+### 완료한 작업
+
+- 북브리프_돈의심리학.pdf 텍스트를 확인하고 평가 질문 근거로 사용할 문장을 선별
+- MVP retrieval evaluation 용도에 맞춰 질문 6개 작성
+- 각 질문에 expected_answer, expected_evidence, source_document, source_page, source_section, difficulty, question_type, metadata 포함
+
+### 현재 상태
+
+- 실제 검색 metric 계산은 TASK-013 범위이므로 구현하지 않았다.
+- 샘플 질문은 현재 PDF의 1~2쪽에서 확인한 근거만 사용했다.
+- TASK-003 변경사항은 아직 커밋하지 않았다.
+
+### 다음에 할 일
+
+- docs/evaluation_questions.json JSON 문법 검증
+- TASK-002의 load_evaluation_questions로 샘플 질문 로드 검증
+- TASK-003 변경 범위 검토
+- TASK-003 커밋
+- TASK-004 진행 전 별도 계획 작성
+
+### 주의해야 할 점
+
+- source_page는 PDF 추출 기준 페이지 번호를 수동으로 기록했다.
+- expected_evidence는 검색 평가에 사용할 최소 근거 문장으로 작성했으며, 자동 채점 로직은 아직 없다.
+- TASK-004 이후 청킹 전략 구현은 이번 작업 범위가 아니다.
